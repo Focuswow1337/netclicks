@@ -2,41 +2,6 @@
 const leftMenu = document.querySelector(".left-menu"),
   hamburger = document.querySelector(".hamburger");
 
-let imagesForCard = document.querySelectorAll(".tv-card__img");
-
-imagesForCard.forEach((item) => {
-  // let imagesCard = document.querySelector(".tv-card__img");
-  let oldImagesCard = item.getAttribute("src");
-
-  item.addEventListener("mouseover", () => {
-    let newImagesCard = item.getAttribute("data-backdrop");
-
-    if (!(newImagesCard === "")) {
-      item.setAttribute("src", newImagesCard);
-    }
-  });
-
-  item.addEventListener("mouseout", () => {
-    item.setAttribute("src", oldImagesCard);
-  });
-});
-
-const changeImageCard = () => {
-  let imagesCard = document.querySelector(".tv-card__img");
-  let oldImagesCard = imagesCard.getAttribute("src");
-
-  imagesCard.addEventListener("mouseover", () => {
-    let newImagesCard = imagesCard.getAttribute("data-backdrop");
-    imagesCard.setAttribute("src", newImagesCard);
-  });
-
-  imagesCard.addEventListener("mouseout", () => {
-    imagesCard.setAttribute("src", oldImagesCard);
-  });
-};
-
-// changeImageCard();
-
 // СОБЫТИЯ. ОБРАБОТЧИКИ СОБЫТИЙ
 
 // Открытие/закрыти меню по кнопке
@@ -64,4 +29,26 @@ leftMenu.addEventListener("click", (event) => {
 });
 // ФУНКЦИИ
 
+// ЗАМЕНА Изображений карточек фильмов
+const changeImageCard = () => {
+  let imagesForCard = document.querySelectorAll(".tv-card__img");
+
+  imagesForCard.forEach((item) => {
+    // let imagesCard = document.querySelector(".tv-card__img");
+    let oldImagesCard = item.getAttribute("src");
+
+    item.addEventListener("mouseover", () => {
+      let newImagesCard = item.getAttribute("data-backdrop");
+
+      if (!(newImagesCard === "")) {
+        item.setAttribute("src", newImagesCard);
+      }
+    });
+
+    item.addEventListener("mouseout", () => {
+      item.setAttribute("src", oldImagesCard);
+    });
+  });
+};
 // ВЫЗОВ ФУНКЦИИ
+changeImageCard();
