@@ -1,6 +1,84 @@
 // ПЕРЕМЕННЫЕ
 const leftMenu = document.querySelector(".left-menu"),
-  hamburger = document.querySelector(".hamburger");
+  hamburger = document.querySelector(".hamburger"),
+  modal = document.querySelector('.modal'),
+  tvShowList = document.querySelector('.tv-shows__list'),
+  IMG_URL = 'https://image.tmdb.org/t/p/w185_and_h278_bestv2',
+  API_KEY = '5189f5be8b28c15f8b6340d26142c3ec';
+
+
+class DBService {
+  getData = async (url) => {
+    const res = await fetch(url);
+
+    if (res.ok) {
+      return res.json();
+    } else {
+      throw new Error(`Не удалось получить данные по адресу ${url}`);
+    }
+
+  }
+
+  getTestData = () => {
+    return this.getData('test.json');
+  }
+}
+
+// РЕНДЕР КАРТОЧЕК
+const renderCard = response => {
+
+  tvShowList.textContent = '';
+
+  response.results.forEach(item => {
+
+    const {
+      backdrop_path: backdrop,
+      name: title,
+      poster_path: poster,
+      vote_average: vote
+    } = item;
+
+
+    const posterIMG = poster ? IMG_URL + poster : 'img/no-poster.jpg';
+    const backdropIMG = '';
+    const voteElem = '';
+
+
+    const card = document.createElement('li');
+    card.className = 'tv-shows__item';
+    card.innerHTML = `
+            <a href="#" class="tv-card">
+                <span class="tv-card__vote">${vote}</span>
+                <img class="tv-card__img"
+                  src="${posterIMG}"
+                  data-backdrop="${IMG_URL + backdrop}"
+                  alt="${title}">
+                <h4 class="tv-card__head">${title}</h4>
+            </a>`;
+
+    tvShowList.append(card);
+  });
+}
+
+new DBService().getTestData().then(renderCard);
+
+// ФУНКЦИИ
+
+// ЗАМЕНА Изображений карточек фильмов
+
+const changeImage = event => {
+  const card = event.target.closest('.tv-shows__item');
+
+  if (card) {
+    const img = card.querySelector('.tv-card__img');
+
+    if (img.dataset.backdrop) {
+      [img.src, img.dataset.backdrop] = [img.dataset.backdrop, img.src];
+    }
+  }
+};
+
+
 
 // СОБЫТИЯ. ОБРАБОТЧИКИ СОБЫТИЙ
 
@@ -27,28 +105,34 @@ leftMenu.addEventListener("click", (event) => {
     hamburger.classList.add("open");
   }
 });
-// ФУНКЦИИ
 
-// ЗАМЕНА Изображений карточек фильмов
-const changeImageCard = () => {
-  let imagesForCard = document.querySelectorAll(".tv-card__img");
+// открытие модального окна
+tvShowList.addEventListener('click', event => {
 
-  imagesForCard.forEach((item) => {
-    // let imagesCard = document.querySelector(".tv-card__img");
-    let oldImagesCard = item.getAttribute("src");
+  event.preventDefault();
 
-    item.addEventListener("mouseover", () => {
-      let newImagesCard = item.getAttribute("data-backdrop");
+  const target = event.target;
+  const card = target.closest(".tv-card");
 
-      if (!(newImagesCard === "")) {
-        item.setAttribute("src", newImagesCard);
-      }
-    });
+  if (card) {
+    document.body.style.overflow = 'hidden';
+    modal.classList.remove('hide');
+  }
+});
 
-    item.addEventListener("mouseout", () => {
-      item.setAttribute("src", oldImagesCard);
-    });
-  });
-};
+// закрытие модального окна 
+
+modal.addEventListener('click', event => {
+  if (event.target.classList.contains('modal') || event.target.closest('.cross')) {
+    document.body.style.overflow = '';
+    modal.classList.add('hide');
+  }
+
+});
+
+// Замена картинок в карточке
+tvShowList.addEventListener('mouseover', changeImage);
+tvShowList.addEventListener('mouseout', changeImage);
+
+
 // ВЫЗОВ ФУНКЦИИ
-changeImageCard();
