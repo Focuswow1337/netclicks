@@ -22,6 +22,8 @@ const IMG_URL = "https://image.tmdb.org/t/p/w185_and_h278_bestv2",
 const loading = document.createElement("div");
 loading.className = "loading";
 
+const preloader = document.querySelector(".preloader");
+
 class DBService {
   getData = async (url) => {
     const res = await fetch(url);
@@ -52,30 +54,34 @@ class DBService {
   };
 }
 
-const result = new DBService().getSearchResult("Няня");
+const result = new DBService().getSearchResult();
 
 console.log(result);
 // РЕНДЕР КАРТОЧЕК
 const renderCard = (response) => {
   tvShowList.textContent = "";
 
-  response.results.forEach((item) => {
-    const {
-      backdrop_path: backdrop,
-      name: title,
-      poster_path: poster,
-      vote_average: vote,
-      id,
-    } = item;
+  if (response.results == 0) {
+    tvShowList.textContent = "Ничего не найдено";
+    loading.remove();
+  } else {
+    response.results.forEach((item) => {
+      const {
+        backdrop_path: backdrop,
+        name: title,
+        poster_path: poster,
+        vote_average: vote,
+        id,
+      } = item;
 
-    const posterIMG = poster ? IMG_URL + poster : "img/no-poster.jpg";
-    const backdropIMG = backdrop ? IMG_URL + backdrop : "";
-    const voteElem = vote ? `<span class="tv-card__vote">${vote}</span>` : "";
+      const posterIMG = poster ? IMG_URL + poster : "img/no-poster.jpg";
+      const backdropIMG = backdrop ? IMG_URL + backdrop : "";
+      const voteElem = vote ? `<span class="tv-card__vote">${vote}</span>` : "";
 
-    const card = document.createElement("li");
-    card.idTV = id;
-    card.className = "tv-shows__item";
-    card.innerHTML = `
+      const card = document.createElement("li");
+      card.idTV = id;
+      card.className = "tv-shows__item";
+      card.innerHTML = `
             <a href="#" id=${id} class="tv-card">
                 ${voteElem}
                 <img class="tv-card__img"
@@ -84,9 +90,10 @@ const renderCard = (response) => {
                   alt="${title}">
                 <h4 class="tv-card__head">${title}</h4>
             </a>`;
-    loading.remove();
-    tvShowList.append(card);
-  });
+      loading.remove();
+      tvShowList.append(card);
+    });
+  }
 };
 
 searchForm.addEventListener("submit", (event) => {
@@ -176,8 +183,16 @@ tvShowList.addEventListener("click", (event) => {
         }
       )
       .then(() => {
-        document.body.style.overflow = "hidden";
-        modal.classList.remove("hide");
+        preloader.style.display = "block";
+        modal.append("preloader");
+      })
+
+      .then(() => {
+        setTimeout(() => {
+          document.body.style.overflow = "hidden";
+          modal.classList.remove("hide");
+          preloader.style.display = "none";
+        }, 3000);
       });
   }
 });
