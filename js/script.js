@@ -62,7 +62,7 @@ const renderCard = (response) => {
   tvShowList.textContent = "";
 
   if (response.results == 0) {
-    tvShowList.textContent = "Ничего не найдено";
+    tvShowList.textContent = "По вашему запросу сериалов не найдено";
     loading.remove();
   } else {
     response.results.forEach((item) => {
